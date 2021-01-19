@@ -37,6 +37,9 @@ export default class App extends Component {
   }
 
   performSearch = (query = 'Welcome') => {
+    // Set state to loading while fetching the photos
+    this.setState({ loading: true });
+    // Fetch photos from flickr API
     fetch(`https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&per_page=24&format=json&nojsoncallback=?`)
       .then(response => response.json())
       .then(responseData => {
@@ -72,7 +75,7 @@ export default class App extends Component {
           {
             // If state is loading, show the loading... else show routes
             (this.state.loading)
-            ? <p>Loading...</p>
+            ? <h2 className="title">Loading...</h2>
             :
             <Switch>
               <Route path="/cats" render={ () => <PhotoContainer photos={this.state.catPhotos} title='cats'/> }/>

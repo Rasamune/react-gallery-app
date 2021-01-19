@@ -34,7 +34,7 @@ class PhotoContainer extends Component {
 
         return (
             <div className="photo-container">
-                <h2>Results for '{ this.props.title }'</h2>
+                <h2>Results for '<span className="title">{ this.props.title }</span>'</h2>
                 <ul>
                     {/* Display the photos */}
                     { photos }
