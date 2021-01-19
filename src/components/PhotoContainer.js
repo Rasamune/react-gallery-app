@@ -12,7 +12,7 @@ class PhotoContainer extends Component {
             // Remove the "/search/" part from the path
             path = path.slice(8);
             /* If the path does not match the query, do another search of the path
-               This is to ensure that the page is refreshed when navigating the history */
+               This is to ensure that the search is refreshed when navigating the history */
             if (path !== this.props.query) {
                 this.props.search(path);
             }
@@ -20,19 +20,23 @@ class PhotoContainer extends Component {
         
         const results = this.props.photos;
         let photos;
+        // If photos are not empty
         if (results.length > 0) {
+            // Add a Photo component for each photo in results
             photos = results.map(photo => {
                 const url = `https://live.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`;
                 return <Photo url={url} key={photo.id}/>
             });
         } else {
+            // If no results, then add the NotFound component
             photos = <NotFound />
         }
 
         return (
             <div className="photo-container">
-                <h2>Results</h2>
+                <h2>Results for '{ this.props.title }'</h2>
                 <ul>
+                    {/* Display the photos */}
                     { photos }
                 </ul>
             </div>

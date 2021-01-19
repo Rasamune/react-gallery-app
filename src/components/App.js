@@ -11,6 +11,7 @@ import {
 import Search from './Search';
 import Nav from './Nav';
 import PhotoContainer from './PhotoContainer';
+import NotFound404 from './NotFound404';
 
 export default class App extends Component {
 
@@ -18,6 +19,7 @@ export default class App extends Component {
     super();
     this.state = {
       query: "",
+      title: "",
       photos: [],
       catPhotos: [],
       dogPhotos: [],
@@ -27,16 +29,18 @@ export default class App extends Component {
   } 
 
   componentDidMount() {
+    // Perform initial searches when component mounts (page loads)
     this.performSearch('cats');
     this.performSearch('dogs');
     this.performSearch('computers');
     this.performSearch();
   }
 
-  performSearch = (query = 'default') => {
+  performSearch = (query = 'Welcome') => {
     fetch(`https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&per_page=24&format=json&nojsoncallback=?`)
       .then(response => response.json())
       .then(responseData => {
+        // Save the main category photos in their respective states
         if (query === 'cats') {
           this.setState({ catPhotos: responseData.photos.photo });
         } else if (query === 'dogs') {
@@ -44,9 +48,15 @@ export default class App extends Component {
         } else if (query === 'computers') {
           this.setState({ computerPhotos: responseData.photos.photo });
         } else {
+          // Save search category photos in the 'photos' state
           this.setState({ photos: responseData.photos.photo });
         }
-        this.setState({ query })
+        // Save the current query so that we can check it against the search results later
+        this.setState({ query });
+        // Save the query as the title of each page
+        this.setState({ title: query });
+        // Photos have loaded, so set loading to false
+        this.setState({ loading: false });
       })
       .catch(error => {
         console.log('Error fetching and parsing data', error);
@@ -59,12 +69,28 @@ export default class App extends Component {
         <div className="container">
           <Search onSearch={this.performSearch}/>
           <Nav />
-          <Switch>
-            <Route path="/cats" render={ () => <PhotoContainer photos={this.state.catPhotos} /> }/>
-            <Route path="/dogs" render={ () => <PhotoContainer photos={this.state.dogPhotos} /> }/>
-            <Route path="/computers" render={ () => <PhotoContainer photos={this.state.computerPhotos} /> }/>
-            <Route path="/search" render={ () => <PhotoContainer photos={this.state.photos} search={this.performSearch} query={this.state.query}/> }/>
-          </Switch>  
+          {
+            // If state is loading, show the loading... else show routes
+            (this.state.loading)
+            ? <p>Loading...</p>
+            :
+            <Switch>
+              <Route path="/cats" render={ () => <PhotoContainer photos={this.state.catPhotos} title='cats'/> }/>
+              <Route path="/dogs" render={ () => <PhotoContainer photos={this.state.dogPhotos} title='dogs' /> }/>
+              <Route path="/computers" render={ () => <PhotoContainer photos={this.state.computerPhotos} title='computers' /> }/>
+              <Route path="/search" render={ () => 
+                /* Search route needs additional props in order to keep track of
+                   search results when the user navigates through the page history */
+                <PhotoContainer 
+                  photos={this.state.photos} 
+                  search={this.performSearch} 
+                  query={this.state.query}
+                  title={this.state.title} 
+                /> 
+              }/>
+              <Route component={NotFound404}/>
+            </Switch>  
+          }
         </div>
       </BrowserRouter>
     );
