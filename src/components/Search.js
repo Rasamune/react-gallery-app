@@ -8,11 +8,11 @@ class Search extends Component {
     handleSubmit = e => {
         e.preventDefault();
         /* onSearch calls the performSearch function from App.js using the value
-           stored in the input's ref */
+           provided by the input's ref */
         this.props.onSearch(this.query.value);
         // Use the history to push and load the new search path
         this.props.history.push(`/search/${this.query.value}`);
-        // Reset the search path
+        // Reset the search field
         e.currentTarget.reset();
     }
 
