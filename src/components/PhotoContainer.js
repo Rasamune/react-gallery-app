@@ -1,31 +1,43 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router';
 
 import NotFound from './NotFound';
+import Photo from './Photo';
 
 class PhotoContainer extends Component {
     render() {
+        // If this is a /search/ path
+        let path = this.props.location.pathname;
+        if (path.includes('/search/')) {
+            // Remove the "/search/" part from the path
+            path = path.slice(8);
+            /* If the path does not match the query, do another search of the path
+               This is to ensure that the page is refreshed when navigating the history */
+            if (path !== this.props.query) {
+                this.props.search(path);
+            }
+        }
+        
+        const results = this.props.photos;
+        let photos;
+        if (results.length > 0) {
+            photos = results.map(photo => {
+                const url = `https://live.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}.jpg`;
+                return <Photo url={url} key={photo.id}/>
+            });
+        } else {
+            photos = <NotFound />
+        }
+
         return (
             <div className="photo-container">
                 <h2>Results</h2>
                 <ul>
-                    <li>
-                        <img src="https://farm5.staticflickr.com/4334/37032996241_4c16a9b530.jpg" alt="" />
-                    </li>
-                    <li>
-                        <img src="https://farm5.staticflickr.com/4342/36338751244_316b6ee54b.jpg" alt="" />
-                    </li>
-                    <li>
-                        <img src="https://farm5.staticflickr.com/4343/37175099045_0d3a249629.jpg" alt="" />
-                    </li>
-                    <li>
-                        <img src="https://farm5.staticflickr.com/4425/36337012384_ba3365621e.jpg" alt="" />
-                    </li>
-                    {/*-- Not Found --*/}
-                    <NotFound />
+                    { photos }
                 </ul>
             </div>
         );
     }
 }
 
-export default PhotoContainer;
+export default withRouter(PhotoContainer);
