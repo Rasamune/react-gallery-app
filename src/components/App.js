@@ -78,6 +78,7 @@ export default class App extends Component {
             ? <h2 className="title">Loading...</h2>
             :
             <Switch>
+              <Route exact path="/" render={ () => <PhotoContainer photos={this.state.photos} title={'Welcome'}/> }/>
               <Route path="/cats" render={ () => <PhotoContainer photos={this.state.catPhotos} title='cats'/> }/>
               <Route path="/dogs" render={ () => <PhotoContainer photos={this.state.dogPhotos} title='dogs' /> }/>
               <Route path="/computers" render={ () => <PhotoContainer photos={this.state.computerPhotos} title='computers' /> }/>
